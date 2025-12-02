@@ -1,5 +1,3 @@
-
-````markdown
 # 🚀 CAIRO – AI Agent Platform & Developer SDK
 
 CAIRO is a powerful **AI agent platform** and **developer SDK** designed to help teams build, orchestrate, and deploy intelligent automation workflows safely and at scale. It enables developers to connect LLMs, APIs, tools, and data sources into production-ready agent systems with built-in billing, usage tracking, and multi-tenant organization management.
@@ -9,22 +7,26 @@ CAIRO is a powerful **AI agent platform** and **developer SDK** designed to help
 ## 🌟 Key Features
 
 ### 🤖 AI Agents & Task Execution
-- Tool-calling agents with full reasoning pipelines
-- Multi-step task orchestration
-- Memory support and state persistence
-- Streaming and async agent responses
+
+- Tool-calling agents with full reasoning pipelines  
+- Multi-step task orchestration  
+- Memory support and state persistence  
+- Streaming and async agent responses  
 
 ---
 
 ### 📦 Cairo SDK
-A TypeScript/Python SDK that provides:
-- Task building and execution APIs
-- Agent orchestration utilities
-- Authentication helpers
-- Token management and usage tracking
 
-Example:
-```ts
+A TypeScript/Python SDK that provides:
+
+- Task building and execution APIs  
+- Agent orchestration utilities  
+- Authentication helpers  
+- Token management and usage tracking  
+
+**Example:**
+
+~~~ts
 import { Cairo } from "cairo-sdk";
 
 const cairo = new Cairo({ apiKey: process.env.CAIRO_API_KEY });
@@ -32,7 +34,7 @@ const cairo = new Cairo({ apiKey: process.env.CAIRO_API_KEY });
 const result = await cairo.runTask({
   prompt: "Draft a product launch announcement",
 });
-````
+~~~
 
 ---
 
@@ -40,18 +42,16 @@ const result = await cairo.runTask({
 
 CAIRO connects AI agents with real-world tools:
 
-* **Stripe** → payments, wallet top-ups, metered billing
-* **GitHub** → issues, PR creation, code automation
-* APIs & Webhooks for custom integrations
+- **Stripe** → payments, wallet top-ups, metered billing  
+- **GitHub** → issues, PR creation, code automation  
+- APIs & Webhooks for custom integrations  
 
 Planned integrations:
 
-* Slack
-* Notion
-* Google Workspace
-* Jira
-
----
+- Slack  
+- Notion  
+- Google Workspace  
+- Jira  
 
 ---
 
@@ -59,10 +59,10 @@ Planned integrations:
 
 ### 💼 User Wallet System
 
-* Each organization has a wallet balance.
-* Users can top-up their wallet using Stripe Checkout.
-* Agents consume credits based on model usage and token costs.
-* Balance updates occur in real-time via webhook confirmation.
+- Each organization has a wallet balance.  
+- Users can top-up their wallet using Stripe Checkout.  
+- Agents consume credits based on model usage and token costs.  
+- Balance updates occur in real-time via webhook confirmation.  
 
 ---
 
@@ -74,9 +74,9 @@ User selects amount and clicks **Add Balance**.
 
 Frontend route:
 
-```
+~~~text
 POST /payment/create-checkout-session
-```
+~~~
 
 ---
 
@@ -84,9 +84,9 @@ POST /payment/create-checkout-session
 
 Backend creates a Stripe checkout session with metadata:
 
-* `org_id`
-* `user_id`
-* `payment_type = wallet_topup`
+- `org_id`  
+- `user_id`  
+- `payment_type = wallet_topup`  
 
 ---
 
@@ -100,32 +100,32 @@ User completes payment securely on Stripe-hosted UI.
 
 Event:
 
-```
+~~~text
 checkout.session.completed
-```
+~~~
 
 Webhook handler actions:
 
-* Verify webhook signature
-* Retrieve organization + amount
-* Update wallet balance
-* Create ledger credit entry
+- Verify webhook signature  
+- Retrieve organization + amount  
+- Update wallet balance  
+- Create ledger credit entry  
 
 ---
 
 #### 5️⃣ Wallet Database Update
 
-```sql
+~~~sql
 UPDATE organizations
 SET wallet_balance = wallet_balance + <amount>
 WHERE id = <org_id>;
-```
+~~~
 
 ---
 
 #### 6️⃣ Ledger Entry Created
 
-```sql
+~~~sql
 INSERT INTO credit_transactions (
   org_id,
   transaction_type,
@@ -134,9 +134,7 @@ INSERT INTO credit_transactions (
   stripe_session_id
 )
 VALUES (...);
-```
-
----
+~~~
 
 ---
 
@@ -146,14 +144,14 @@ VALUES (...);
 
 CAIRO backend is powered by FastAPI and split into service layers:
 
-```
+~~~text
 api/
  ├─ auth/
  ├─ integrations/
  ├─ payments/
  ├─ agents/
  └─ usage/
-```
+~~~
 
 ---
 
@@ -169,26 +167,24 @@ api/
 
 ---
 
----
-
 ## 🗄️ Database Schema
 
 ### Organization Table
 
-```sql
+~~~sql
 organizations (
   id UUID PRIMARY KEY,
   name TEXT,
   wallet_balance DECIMAL,
   created_at TIMESTAMP
 );
-```
+~~~
 
 ---
 
 ### Credit Ledger
 
-```sql
+~~~sql
 credit_transactions (
   id UUID PRIMARY KEY,
   org_id UUID FOREIGN KEY,
@@ -198,13 +194,13 @@ credit_transactions (
   stripe_session_id TEXT,
   created_at TIMESTAMP
 );
-```
+~~~
 
 ---
 
 ### API Keys
 
-```sql
+~~~sql
 api_keys (
   id UUID PRIMARY KEY,
   org_id UUID,
@@ -212,9 +208,7 @@ api_keys (
   is_active BOOLEAN,
   created_at TIMESTAMP
 );
-```
-
----
+~~~
 
 ---
 
@@ -222,35 +216,31 @@ api_keys (
 
 CAIRO uses JWT-based authentication.
 
-* Each user logs in and receives a JWT token
-* JWT includes:
+- Each user logs in and receives a JWT token  
+- JWT includes:  
+  - `user_id`  
+  - `org_id`  
+  - expiration timestamp  
+- API keys are tied to organizations  
 
-  * `user_id`
-  * `org_id`
-  * expiration timestamp
-* API keys are tied to organizations
-  -Requests validate:
+Requests validate:
 
-  * JWT token
-  * Organization membership
-  * Wallet balance before task execution
-
----
+- JWT token  
+- Organization membership  
+- Wallet balance before task execution  
 
 ---
 
 ## ⚙️ Agent Execution Flow
 
-1️⃣ User submits task via dashboard or SDK
-2️⃣ Wallet balance checked
-3️⃣ Agent pipeline processes prompt
-4️⃣ Tools + APIs invoked as required
-5️⃣ LLM request executed
-6️⃣ Token usage measured
-7️⃣ Credits deducted from wallet
-8️⃣ Results streamed back to user
-
----
+1️⃣ User submits task via dashboard or SDK  
+2️⃣ Wallet balance checked  
+3️⃣ Agent pipeline processes prompt  
+4️⃣ Tools + APIs invoked as required  
+5️⃣ LLM request executed  
+6️⃣ Token usage measured  
+7️⃣ Credits deducted from wallet  
+8️⃣ Results streamed back to user  
 
 ---
 
@@ -258,7 +248,7 @@ CAIRO uses JWT-based authentication.
 
 Each task records:
 
-```json
+~~~json
 {
   "task_id": "uuid",
   "org_id": "uuid",
@@ -267,43 +257,39 @@ Each task records:
   "completion_tokens": 470,
   "credits_used": 3.93
 }
-```
+~~~
 
 Credits deducted automatically:
 
-```sql
+~~~sql
 UPDATE organizations
 SET wallet_balance = wallet_balance - <credits_used>
 WHERE id = <org_id>;
-```
-
----
+~~~
 
 ---
 
 ## 🌐 Platform Frontend
 
-Dashboard Features:
+**Dashboard Features:**
 
-* Wallet balance view
-* Stripe checkout top-ups
-* Task execution panels
-* Usage reports
-* API key management
+- Wallet balance view  
+- Stripe checkout top-ups  
+- Task execution panels  
+- Usage reports  
+- API key management  
 
-Built using:
+**Built using:**
 
-* React + Next.js
-* Tailwind CSS
-* Secure JWT auth flow
-
----
+- React + Next.js  
+- Tailwind CSS  
+- Secure JWT auth flow  
 
 ---
 
 ## 🧩 Architecture Diagram
 
-```
+~~~text
 User Dashboard
      |
      v
@@ -322,43 +308,37 @@ FastAPI Gateway
      |
      v
 PostgreSQL Database
-```
-
----
+~~~
 
 ---
 
 ## 🛡️ Security
 
-* Encrypted secrets via environment variables
-* Stripe webhook signature verification
-* JWT token validation per request
-* API key hashing
-* Rate limiting on task creation
-
----
+- Encrypted secrets via environment variables  
+- Stripe webhook signature verification  
+- JWT token validation per request  
+- API key hashing  
+- Rate limiting on task creation  
 
 ---
 
 ## 🗺️ Roadmap
 
-✅ Developer SDK stable release
-✅ Stripe billing + wallet system
-✅ GitHub integration foundation
+✅ Developer SDK stable release  
+✅ Stripe billing + wallet system  
+✅ GitHub integration foundation  
 
-🚧 In Progress
+🚧 In Progress:
 
-* Team collaboration agents
-* Usage alerting dashboard
-* Multi-agent workflows UI
+- Team collaboration agents  
+- Usage alerting dashboard  
+- Multi-agent workflows UI  
 
-🔜 Planned
+🔜 Planned:
 
-* Slack & Notion integrations
-* Marketplace for custom agents
-* AI workflow templates
-
----
+- Slack & Notion integrations  
+- Marketplace for custom agents  
+- AI workflow templates  
 
 ---
 
@@ -366,16 +346,15 @@ PostgreSQL Database
 
 We welcome contributions!
 
-1. Fork the repository
+1. Fork the repository  
 2. Create a feature branch:
 
-   ```bash
+   ~~~bash
    git checkout -b feature/my-feature
-   ```
-3. Commit your changes
-4. Open a pull request
+   ~~~
 
----
+3. Commit your changes  
+4. Open a pull request  
 
 ---
 
@@ -383,10 +362,8 @@ We welcome contributions!
 
 For platform access or partnership inquiries:
 
-📧 [support@cairo.ai](mailto:support@cairo.ai)
-🌍 Website: [https://cairo.ai](https://cairo.ai) (launching soon)
-
----
+📧 [support@cairo.ai](mailto:support@cairo.ai)  
+🌍 Website: <https://cairo.ai> (launching soon)  
 
 ---
 
@@ -394,23 +371,23 @@ For platform access or partnership inquiries:
 
 Install SDK:
 
-```bash
+~~~bash
 npm install cairo-sdk
-```
+~~~
 
 Initialize:
 
-```ts
+~~~ts
 const cairo = new Cairo({ apiKey: "YOUR_API_KEY" });
-```
+~~~
 
 Run your first task:
 
-```ts
+~~~ts
 await cairo.runTask({
   prompt: "Summarize today's market news",
 });
-```
+~~~
 
 ---
 
