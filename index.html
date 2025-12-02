@@ -31,4 +31,308 @@ hr {
 table {
   border-collapse: collapse;
   width: 100%;
-  margin: 12
+  margin: 12px 0;
+}
+th, td {
+  border: 1px solid #30363d;
+  padding: 8px;
+}
+th {
+  background: #161b22;
+}
+a { color:#58a6ff; }
+</style>
+</head>
+
+<body>
+
+<h1>🚀 CAIRO – AI Agent Platform & Developer SDK</h1>
+
+<p>
+CAIRO is a powerful <strong>AI agent platform</strong> and <strong>developer SDK</strong> designed to help teams build, orchestrate, and deploy intelligent automation workflows safely and at scale.
+It enables developers to connect LLMs, APIs, tools, and data sources into production-ready agent systems with built-in billing, usage tracking, and multi-tenant organization management.
+</p>
+
+<hr>
+
+<h2>🌟 Key Features</h2>
+
+<h3>🤖 AI Agents & Task Execution</h3>
+<ul>
+<li>Tool-calling agents with full reasoning pipelines</li>
+<li>Multi-step task orchestration</li>
+<li>Memory support and state persistence</li>
+<li>Streaming and async agent responses</li>
+</ul>
+
+<hr>
+
+<h3>📦 Cairo SDK</h3>
+<ul>
+<li>Task building and execution APIs</li>
+<li>Agent orchestration utilities</li>
+<li>Authentication helpers</li>
+<li>Token management and usage tracking</li>
+</ul>
+
+<h4>Example</h4>
+<pre><code>
+import { Cairo } from "cairo-sdk";
+
+const cairo = new Cairo({ apiKey: process.env.CAIRO_API_KEY });
+
+const result = await cairo.runTask({
+  prompt: "Draft a product launch announcement",
+});
+</code></pre>
+
+<hr>
+
+<h3>🔗 Integrations</h3>
+
+<ul>
+<li><strong>Stripe</strong> – payments, wallet top-ups, metered billing</li>
+<li><strong>GitHub</strong> – issues, PR creation, code automation</li>
+<li>APIs & Webhooks for custom integrations</li>
+</ul>
+
+<b>Planned:</b>
+<ul>
+<li>Slack</li>
+<li>Notion</li>
+<li>Google Workspace</li>
+<li>Jira</li>
+</ul>
+
+<hr>
+
+<h2>💳 Wallet, Credits & Billing (Stripe)</h2>
+
+<h3>💼 User Wallet System</h3>
+<ul>
+<li>Organization wallet balances</li>
+<li>Stripe Checkout top-ups</li>
+<li>Usage-based credit deduction</li>
+<li>Real-time webhook updates</li>
+</ul>
+
+<hr>
+
+<h3>🔄 Billing Flow</h3>
+
+<h4>1️⃣ Add Balance</h4>
+<pre><code>POST /payment/create-checkout-session</code></pre>
+
+<h4>2️⃣ Stripe Checkout Metadata</h4>
+<ul>
+<li><code>org_id</code></li>
+<li><code>user_id</code></li>
+<li><code>payment_type = wallet_topup</code></li>
+</ul>
+
+<h4>3️⃣ Redirect to Stripe</h4>
+<p>User completes payment securely.</p>
+
+<h4>4️⃣ Webhook</h4>
+<pre><code>checkout.session.completed</code></pre>
+
+<ul>
+<li>Signature verification</li>
+<li>Balance update</li>
+<li>Credit ledger insert</li>
+</ul>
+
+<h4>5️⃣ Wallet Update</h4>
+<pre><code>
+UPDATE organizations
+SET wallet_balance = wallet_balance + &lt;amount&gt;
+WHERE id = &lt;org_id&gt;;
+</code></pre>
+
+<h4>6️⃣ Credit Ledger Insert</h4>
+<pre><code>
+INSERT INTO credit_transactions (
+  org_id,
+  transaction_type,
+  amount,
+  source,
+  stripe_session_id
+)
+VALUES (...);
+</code></pre>
+
+<hr>
+
+<h2>🛠 Backend Architecture</h2>
+
+<pre>
+api/
+ ├─ auth/
+ ├─ integrations/
+ ├─ payments/
+ ├─ agents/
+ └─ usage/
+</pre>
+
+<table>
+<tr><th>Component</th><th>Description</th></tr>
+<tr><td>Auth Service</td><td>JWT authentication & org verification</td></tr>
+<tr><td>Wallet Service</td><td>Balance validation & credit accounting</td></tr>
+<tr><td>Stripe Service</td><td>Checkout + webhook handling</td></tr>
+<tr><td>Agent Service</td><td>AI task execution engine</td></tr>
+<tr><td>Usage Service</td><td>Token metering</td></tr>
+</table>
+
+<hr>
+
+<h2>🗄 Database Schema</h2>
+
+<h4>Organizations</h4>
+<pre><code>
+organizations(
+ id UUID,
+ name TEXT,
+ wallet_balance DECIMAL,
+ created_at TIMESTAMP
+)
+</code></pre>
+
+<h4>Credit Ledger</h4>
+<pre><code>
+credit_transactions(
+ id UUID,
+ org_id UUID,
+ transaction_type TEXT,
+ amount DECIMAL,
+ source TEXT,
+ stripe_session_id TEXT,
+ created_at TIMESTAMP
+)
+</code></pre>
+
+<h4>API Keys</h4>
+<pre><code>
+api_keys(
+ id UUID,
+ org_id UUID,
+ key_hash TEXT,
+ is_active BOOLEAN,
+ created_at TIMESTAMP
+)
+</code></pre>
+
+<hr>
+
+<h2>🔐 Authentication</h2>
+
+<ul>
+<li>JWT tokens per session</li>
+<li>Includes <code>user_id</code>, <code>org_id</code>, expiry</li>
+<li>API keys tied to organizations</li>
+<li>Every request validates auth + wallet balance</li>
+</ul>
+
+<hr>
+
+<h2>⚙ Agent Execution Flow</h2>
+
+<ol>
+<li>User submits task</li>
+<li>Wallet balance check</li>
+<li>Agent pipeline execution</li>
+<li>Tool invocation</li>
+<li>LLM calls</li>
+<li>Token tracking</li>
+<li>Credit deduction</li>
+<li>Results streamed</li>
+</ol>
+
+<hr>
+
+<h2>📊 Usage & Metering</h2>
+
+<pre><code>
+{
+ "model": "gpt-4",
+ "prompt_tokens": 230,
+ "completion_tokens": 470,
+ "credits_used": 3.93
+}
+</code></pre>
+
+<hr>
+
+<h2>🌐 Platform Frontend</h2>
+
+<ul>
+<li>Wallet dashboard</li>
+<li>Stripe top-ups</li>
+<li>Task execution panels</li>
+<li>Usage reporting</li>
+<li>API key management</li>
+</ul>
+
+<hr>
+
+<h2>🗺 Roadmap</h2>
+
+<p><b>Released</b></p>
+<ul>
+<li>SDK</li>
+<li>Stripe billing</li>
+<li>GitHub integration</li>
+</ul>
+
+<p><b>In Progress</b></p>
+<ul>
+<li>Collaboration agents</li>
+<li>Usage alerts</li>
+<li>Multi-agent workflows</li>
+</ul>
+
+<p><b>Planned</b></p>
+<ul>
+<li>Slack</li>
+<li>Marketplace</li>
+<li>Templates</li>
+</ul>
+
+<hr>
+
+<h2>🤝 Contributing</h2>
+
+<pre><code>
+git checkout -b feature/my-feature
+</code></pre>
+
+<hr>
+
+<h2>📬 Contact</h2>
+<p>
+📧 support@cairo.ai<br>
+🌍 <a href="https://cairo.ai">https://cairo.ai</a>
+</p>
+
+<hr>
+
+<h2>🚀 Getting Started</h2>
+<pre><code>
+npm install cairo-sdk
+</code></pre>
+
+<pre><code>
+const cairo = new Cairo({ apiKey: "YOUR_API_KEY" });
+</code></pre>
+
+<pre><code>
+await cairo.runTask({
+  prompt: "Summarize today's market news",
+});
+</code></pre>
+
+<hr>
+
+<p><strong>Build smarter with CAIRO — where AI agents go to production.</strong></p>
+
+</body>
+</html>
